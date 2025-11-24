@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Keystroke Authentication Checker</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px #ccc;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            margin: 5px 0 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0077cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: #005fa3;
+        }
+        h2 {
+            text-align: center;
+        }
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+
+    <script>
+        function randomizeInputs() {
+            const fields = [
+                "sessionIndex", "rep",
+                "H.period", "DD.period.t", "UD.period.t", "H.t", "DD.t.i", "UD.t.i",
+                "H.i", "DD.i.e", "UD.i.e", "H.e", "DD.e.five", "UD.e.five",
+                "H.five", "DD.five.Shift.r", "UD.five.Shift.r", "H.Shift.r",
+                "DD.Shift.r.o", "UD.Shift.r.o", "H.o", "DD.o.a", "UD.o.a", "H.a",
+                "DD.a.n", "UD.a.n", "H.n", "DD.n.l", "UD.n.l", "H.l",
+                "DD.l.Return", "UD.l.Return", "H.Return"
+            ];
+
+            fields.forEach(field => {
+                let randomValue;
+
+                if (field === "sessionIndex") {
+                    randomValue = Math.floor(Math.random() * 8) + 1; // 1–8
+                } 
+                else if (field === "rep") {
+                    randomValue = Math.floor(Math.random() * 50) + 1; // 1–50
+                } 
+                else {
+                    randomValue = (Math.random() * 1.75 + 0.05).toFixed(4); // timing values
+                }
+
+                document.getElementsByName(field)[0].value = randomValue;
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h2>Keystroke Authentication Checker</h2>
+
+    <form action="/predict" method="post">
+
+        <!-- NEW FIELDS: sessionIndex + rep -->
+        <label>sessionIndex</label>
+        <input type="text" name="sessionIndex">
+
+        <label>rep</label>
+        <input type="text" name="rep">
+
+        <!-- 31 timing fields -->
+        {% for field in [
+            "H.period","DD.period.t","UD.period.t","H.t","DD.t.i","UD.t.i",
+            "H.i","DD.i.e","UD.i.e","H.e","DD.e.five","UD.e.five",
+            "H.five","DD.five.Shift.r","UD.five.Shift.r","H.Shift.r",
+            "DD.Shift.r.o","UD.Shift.r.o","H.o","DD.o.a","UD.o.a","H.a",
+            "DD.a.n","UD.a.n","H.n","DD.n.l","UD.n.l","H.l",
+            "DD.l.Return","UD.l.Return","H.Return"
+        ] %}
+            <label>{{ field }}</label>
+            <input type="text" name="{{ field }}">
+        {% endfor %}
+
+        <button type="button" onclick="randomizeInputs()">Randomize Inputs</button>
+
+        <button type="submit">Check Authentication</button>
+    </form>
+
+    {% if result %}
+        <div class="result">{{ result }}</div>
+    {% endif %}
+
+</div>
+</body>
+</html>
